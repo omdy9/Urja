@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Location Tracker</h1>
+    <button id="startTracking">Start Tracking</button>
+    <button id="stopTracking" disabled>Stop Tracking</button>
+    <div id="output">
+        <p><strong>Current Location:</strong></p>
+        <p id="location">Not tracking yet...</p>
+    </div>
+
+    <script>
+        let watchId = null;
+
+        const startButton = document.getElementById('startTracking');
+        const stopButton = document.getElementById('stopTracking');
+        const locationDisplay = document.getElementById('location');
+
+        // Start tracking
+        startButton.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                watchId = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        locationDisplay.textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
+                    },
+                    (error) => {
+                        locationDisplay.textContent = `Error: ${error.message}`;
+                    },
+                    { enableHighAccuracy: true }
+                );
+                startButton.disabled = true;
+                stopButton.disabled = false;
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        });
+
+        // Stop tracking
+        stopButton.addEventListener('click', () => {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+                locationDisplay.textContent = "Tracking stopped.";
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
